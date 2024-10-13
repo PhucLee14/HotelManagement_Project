@@ -1,35 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    useNavigate,
+    useLocation,
+} from "react-router-dom";
+import { publicRoutes } from "./routes/Routes";
+import DefaultLayout from "./components/layouts/DefaultLayout";
+import { Fragment, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { handleRefresh } from "./redux/auth/authAction";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const auth = useSelector((state) => state.auth);
+    // const authAdmin = useSelector((state) => state.authAdmin);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        if (window.location.pathname.startsWith("/admin")) {
+            dispatch(handleRefresh());
+        }
+    }, []);
+
+    useEffect(() => {
+        if (auth.auth && location.pathname === "/admin/login") {
+            navigate("/admin");
+        }
+
+        if (!auth.auth && window.location.pathname.startsWith("/admin")) {
+            navigate("/admin/login");
+        }
+    }, [auth.auth, location.pathname]);
+
+    return (
+        <>
+            <Routes>
+                {publicRoutes.map((route, index) => {
+                    const Page = route.component;
+                    let Layout = DefaultLayout;
+                    if (route.layout) {
+                        Layout = route.Layout;
+                    } else if (route.layout === null) {
+                        Layout = Fragment;
+                    }
+                    return (
+                        <Route
+                            key={index}
+                            path={route.path}
+                            element={
+                                <Layout>
+                                    <Page />
+                                </Layout>
+                            }
+                        />
+                    );
+                })}
+            </Routes>
+            <Toaster position="bottom-right" reverseOrder={false} />
+        </>
+    );
 }
 
-export default App
+export default App;
