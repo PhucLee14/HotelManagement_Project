@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post("/add", guestController.add);
 router.post("/edit/:id", guestController.edit);
+router.get("/:id", guestController.getById);
 
 module.exports = router;

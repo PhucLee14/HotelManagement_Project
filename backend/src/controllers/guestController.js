@@ -198,7 +198,20 @@ let edit = async (req, res) => {
   }
 };
 
+let getById = async (req, res) => {
+    try {
+      const id = req.params.id;
+      await guestModel.findById({ _id: id }).then((guest) => res.json(guest));
+    } catch (error) {
+      res.status(200).json({
+        code: error.code || 1,
+        message: error.message,
+      });
+    }
+  };
+
 module.exports = {
     add,
-    edit
+    edit,
+    getById
 };
