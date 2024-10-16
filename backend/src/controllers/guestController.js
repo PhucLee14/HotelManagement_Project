@@ -210,8 +210,120 @@ let getById = async (req, res) => {
     }
   };
 
+  let viewListGuest = async (req, res) => {
+    try {
+      const currentPage = parseInt(req.params.currentPage) || 1;
+  
+      let guests;
+      let count;
+  
+      if (currentPage === -1) {
+        // Lấy hết dữ liệu
+        guests = await guestModel.find().sort({ createdAt: -1 });
+        count = guests.length;
+      } else {
+        count = await guestModel.countDocuments();
+        const offset = 12 * (currentPage - 1);
+  
+        guests = await guestModel
+          .find()
+          .limit(12)
+          .skip(offset)
+          .sort({ createdAt: -1 });
+      }
+  
+      if (!guests || guests.length === 0) {
+        throw {
+          code: 1,
+          message: "Không có data nào",
+        };
+      }
+  
+      res.status(200).json({
+        code: 0,
+        message: "Lấy dữ liệu thành công",
+        count: count,
+        data: guests,
+      });
+    } catch (error) {
+      res.status(200).json({
+        code: error.code || 1,
+        message: error.message || "Lỗi: viewListGuest",
+      });
+    }
+  };
+  
+  let searchGuest = async (req, res) => {
+    try {
+      const currentPage = req.params.currentPage || 1;
+      const keyword = req.params.keyword || null;
+  
+      if (!keyword) {
+        throw {
+          code: 1,
+          message: "Hãy nhập nội dung tìm kiếm",
+        };
+      }
+  
+      const regex = new RegExp(keyword, "i");
+  
+      const count = await guestModel.countDocuments({
+        $or: [{ name: regex }, { phoneNumber: regex }],
+      });
+  
+      const offset = 12 * (currentPage - 1);
+  
+      const guest = await guestModel
+        .find({
+          $or: [{ name: regex }, { phoneNumber: regex }],
+        })
+        .limit(12)
+        .skip(offset)
+        .sort({ createdAt: -1 });
+  
+      if (!guest || guest.length === 0) {
+        throw {
+          code: 1,
+          message: "Không có dữ liệu nào",
+        };
+      }
+  
+      res.status(200).json({
+        code: 0,
+        message: "Tìm kiếm thành công",
+        count: count,
+        data: guest,
+      });
+    } catch (error) {
+      res.status(200).json({
+        code: error.code || 1,
+        message: error.message || "Lỗi: searchGuest",
+      });
+    }
+  };
+  
+  let getByPhoneNumber = async (req, res) => {
+    try {
+      const phoneNumber = req.params.phoneNumber;
+      const guest = await guestModel.findOne({ phoneNumber });
+      res.status(200).json({
+        code: 0,
+        message: "Tìm khách hàng theo số điện thoại thành công",
+        data: guest,
+      });
+    } catch (error) {
+      res.status(200).json({
+        code: error.code || 1,
+        message: error.message,
+      });
+    }
+  };
+
 module.exports = {
     add,
     edit,
-    getById
+    getById,
+    viewListGuest,
+    searchGuest,
+    getByPhoneNumber,
 };
