@@ -4,12 +4,19 @@ const guestRoute = require("./guestRoute");
 const serviceRoute = require("./serviceRoute");
 const roomTypeRoute = require("./roomTypeRoute");
 const roomRoute = require("./roomRoute");
-const bookingRoute = require("./bookingRoute");
-const paymentRoute = require("./paymentRoute");
-const billRoute = require("./billRoute");
 
 let initRoutes = (app) => {
     app.use("/api/auth", authRoute);
+    // Staff
+    app.use("/api/staff", staffRoute);
+    //Guest
+    app.use("/api/guest", guestRoute);
+    //Service
+    app.use("/api/service", serviceRoute);
+    //Roomtype
+    app.use("/api/room", roomRoute);
+    //Roomtype
+    app.use("/api/roomtype", roomTypeRoute);
     return app;
 };
 
