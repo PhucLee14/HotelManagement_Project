@@ -8,7 +8,102 @@ import { Link } from "react-router-dom";
 import { viewListFreeRoom } from "../../service/bookingService";
 
 const Room = () => {
-    return (
+    const [roomType, setRoomType] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [bookedDate, setBookedDate] = useState({
+        checkin: "",
+        checkout: "",
+    });
+    const [selectedValues, setSelectedValues] = useState([]);
+    const today = new Date().toISOString().split("T")[0];
+    const [submitBtn, setSubmitBtn] = useState(false);
+
+    const getNextDay = (date) => {
+        if (!date) return "";
+        const nextDay = new Date(date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        return nextDay.toISOString().split("T")[0];
+    };
+
+    const getRoomTypes = async () => {
+        try {
+            setIsLoading(true);
+            const data = await viewListRoomType(-1);
+            console.log(data);
+            if (data?.code === 0) {
+                setRoomType(data?.data);
+            } else {
+                setRoomType([]);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getRooms = async () => {
+        try {
+            // setIsLoading(true);
+            const data = await viewListFreeRoom(
+                bookedDate.checkin,
+                bookedDate.checkout
+            );
+            console.log(data);
+            if (data?.code === 0) {
+                setRooms(data?.data);
+            } else {
+                setRooms([]);
+            }
+            // setIsLoading(false);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleCheckin = (e) => {
+        setBookedDate({
+            checkin: e.target.value,
+        });
+    };
+
+    useEffect(() => {
+        getRoomTypes();
+    }, []);
+
+    useEffect(() => {
+        if (roomType.length > 0) {
+            setSelectedValues(
+                roomType.map((roomtype, index) => ({
+                    roomtypeId: roomtype._id,
+                    roomtype: roomtype.name,
+                    price: roomtype.price,
+                    value: "0",
+                    bedQuantity: "",
+                    bedType: "",
+                }))
+            );
+        }
+    }, [roomType]);
+
+    useEffect(() => {
+        localStorage.setItem("bookedDateStored", JSON.stringify(bookedDate));
+        localStorage.setItem("roomStored", JSON.stringify(selectedValues));
+        setSubmitBtn(selectedValues.some((item) => item.value != "0"));
+    }, [selectedValues, bookedDate]);
+
+    useEffect(() => {
+        if (bookedDate.checkin) {
+            setBookedDate((prev) => ({
+                ...prev,
+                checkout: getNextDay(bookedDate.checkin),
+            }));
+        }
+    }, [bookedDate.checkin]);
+
+    return isLoading ? (
+        <Loading />
+    ) : (
         <div className="w-full bg-white flex flex-col items-center">
             <Banner title="Rooms" des="ROOM." />
             <div className="relative w-3/5 bg-white shadow-xl p-8 rounded-xl -top-[70px] flex items-end justify-between">
@@ -17,35 +112,86 @@ const Room = () => {
                     <input
                         type="date"
                         className="border-2 w-full px-4 py-2 rounded-md outline-none"
+                        onChange={handleCheckin}
+                        min={today}
                     />
                 </div>
                 <div className="w-2/5">
                     <p className="mb-2 font-semibold">Check Out</p>
                     <input
                         type="date"
-                        className={`border-2 w-full px-4 py-2 rounded-md outline-none `}
+                        className={`border-2 w-full px-4 py-2 rounded-md outline-none ${
+                            !bookedDate.checkin
+                                ? "opacity-50 cursor-default"
+                                : ""
+                        }`}
+                        min={getNextDay(bookedDate.checkin)}
+                        onClick={(e) => {
+                            if (!bookedDate.checkin) {
+                                e.preventDefault();
+                            }
+                        }}
+                        onChange={(e) => {
+                            setBookedDate((prev) => ({
+                                ...prev,
+                                checkout: e.target.value,
+                            }));
+                        }}
+                        value={bookedDate.checkout}
                     />
                 </div>
-                <button className="btn w-1/6 bg-blue-600 hover:bg-blue-500 text-white h-3/5 rounded-lg">
+                <button
+                    className="btn w-1/6 bg-blue-600 hover:bg-blue-500 text-white h-3/5 rounded-lg"
+                    onClick={() => {
+                        if (bookedDate.checkin && bookedDate.checkout) {
+                            getRooms();
+                        }
+                    }}
+                >
                     Check
                 </button>
             </div>
             <div className="flex w-3/5 flex-wrap justify-between mb-8">
-                <RoomTag
-                    index={index}
-                    img={roomtype.images}
-                    name={roomtype.name}
-                    price={roomtype.price}
-                    bed={bedQuantity + " " + bedType}
-                    quantity={quantity}
-                    onSelectChange={(value) => {
-                        const newQuantities = [...selectedValues];
-                        newQuantities[index].value = value;
-                        newQuantities[index].bedQuantity = bedQuantity;
-                        newQuantities[index].bedType = bedType;
-                        setSelectedValues(newQuantities);
-                    }}
-                />
+                {roomType.map((roomtype, index) => {
+                    let quantity = 0;
+                    rooms.map((room) => {
+                        room.roomType == roomtype._id ? quantity++ : "";
+                    });
+
+                    const bedQuantity =
+                        roomtype.name === "Family" ||
+                        roomtype.name === "Superior" ||
+                        roomtype.name === "Family Suite"
+                            ? 2
+                            : 1;
+
+                    let bedType = "Twin Bed";
+                    if (
+                        roomtype.name === "Family" ||
+                        roomtype.name === "Superior"
+                    ) {
+                        bedType = "Single Bed";
+                    } else if (roomtype.name === "Suite") {
+                        bedType = "Big Twin Bed";
+                    }
+                    return (
+                        <RoomTag
+                            index={index}
+                            img={roomtype.images}
+                            name={roomtype.name}
+                            price={roomtype.price}
+                            bed={bedQuantity + " " + bedType}
+                            quantity={quantity}
+                            onSelectChange={(value) => {
+                                const newQuantities = [...selectedValues];
+                                newQuantities[index].value = value;
+                                newQuantities[index].bedQuantity = bedQuantity;
+                                newQuantities[index].bedType = bedType;
+                                setSelectedValues(newQuantities);
+                            }}
+                        />
+                    );
+                })}
             </div>
             <Link
                 className={`btn py-3 mb-8 px-16 bg-black text-white ${
