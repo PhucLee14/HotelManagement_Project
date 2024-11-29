@@ -337,7 +337,7 @@ const BookingForm = () => {
                         </div>
 
                         <button
-                            className="btn w-full bg-blue-500 hover:bg-blue-400 text-white border-blue-500"
+                            className="btn w-full bg-blue-500 hover:bg-blue-400 text-white"
                             onClick={() => {
                                 if (
                                     guest.phoneNumber &&
@@ -356,40 +356,6 @@ const BookingForm = () => {
                                         18
                                     ) {
                                         getPaymentLink();
-                                        document
-                                            .getElementById("my_modal_2")
-                                            .showModal();
-                                    } else
-                                        toast.error(
-                                            "Bạn chưa đủ tuổi để thực hiện hành động này"
-                                        );
-                                } else
-                                    toast.error(
-                                        "Vui lòng điền hết thông tin cần thiết"
-                                    );
-                            }}
-                        >
-                            Book Now
-                        </button>
-                        <button
-                            className="mt-4 btn w-full border-blue-500 bg-white text-blue-500 hover:border-blue-300 hover:bg-white hover:text-blue-300"
-                            onClick={() => {
-                                if (
-                                    guest.phoneNumber &&
-                                    guest.name &&
-                                    guest.dateOfBirth
-                                ) {
-                                    if (guest.phoneNumber.length != 10) {
-                                        toast.error(
-                                            "Số điện thoại phải đủ 10 số"
-                                        );
-                                    } else if (
-                                        new Date().getFullYear() -
-                                            new Date(
-                                                guest.dateOfBirth
-                                            ).getFullYear() >=
-                                        18
-                                    ) {
                                         document
                                             .getElementById("my_modal_2")
                                             .showModal();
