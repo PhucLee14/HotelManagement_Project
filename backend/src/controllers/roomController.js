@@ -96,6 +96,9 @@ let getById = async (req, res) => {
 
 module.exports = {
   add,
+  // edit,
+  // deleteRoomType,
   viewListRoom,
+  // searchRoomType,
   getById,
 };

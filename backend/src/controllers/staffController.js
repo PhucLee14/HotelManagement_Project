@@ -17,14 +17,14 @@ let login = async (req, res) => {
         if (!staff) {
             throw {
                 code: 1,
-                message: "Tài khoản hoặc mật khẩu không chính xác",
+                message: "Tài khoản hoặc mật khẩu không đúng",
             };
         }
 
         if (!staff.password) {
             throw {
                 code: 1,
-                message: "Tài khoản hoặc mật khẩu không chính xác",
+                message: "Tài khoản hoặc mật khẩu không đúng",
             };
         }
         // console.log(password);
