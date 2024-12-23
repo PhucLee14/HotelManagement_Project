@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+transition-all {
+    @apply transition-all duration-1000 ease-in-out;
+}
+
+transition-menu {
+    @apply transition-all ease-linear duration-300;
+}
