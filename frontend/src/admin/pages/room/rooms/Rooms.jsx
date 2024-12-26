@@ -18,7 +18,6 @@ const Rooms = () => {
         try {
             setIsLoading(true);
             const data = await viewListRoom(-1);
-            console.log(data);
             if (data?.code === 0) {
                 setData(data?.data.reverse());
             } else {
@@ -33,7 +32,6 @@ const Rooms = () => {
     const getRoomTypes = async () => {
         try {
             const data = await viewListRoomType(-1);
-            console.log(data);
             if (data?.code === 0) {
                 setRoomTypes(data?.data);
             } else {
@@ -77,53 +75,60 @@ const Rooms = () => {
                 </button>
             </div>
             <div className="mt-2 flex flex-wrap">
-                {data.map((room) => (
-                    <div
-                        key={room._id}
-                        className={`w-[24%] mt-4 bg-white rounded-lg border-l-4 mr-2 shadow-md ${
-                            room.isFree ? "border-[#1cc88a]" : "border-red-600"
-                        }`}
-                    >
-                        <div className="flex flex-col p-6">
-                            <div>
-                                <p
-                                    className={`uppercase font-semibold text-lg ${
-                                        room.isFree
-                                            ? "text-[#1cc88a]"
-                                            : "text-red-600"
-                                    }`}
-                                >
-                                    {getRoomTypeName(room.roomType)}
-                                </p>
-                                <p className="font-semibold text-lg mt-4">
-                                    {room.roomNumber}
-                                </p>
-                            </div>
-                            <div className="flex justify-end mt-2 -mr-2 -mb-2">
-                                <Link
-                                    to={`/admin/rooms/edit/${room._id}`}
-                                    className={` py-2 px-6 rounded-lg font-semibold ${
-                                        room.isFree
-                                            ? "text-[#1cc88a]"
-                                            : "text-red-600"
-                                    }`}
-                                >
-                                    Edit
-                                </Link>
-                                <Link
-                                    to={`/admin/rooms/${room._id}`}
-                                    className={`text-white py-2 px-6 rounded-lg ${
-                                        room.isFree
-                                            ? "bg-[#1cc88a]"
-                                            : "bg-red-600"
-                                    }`}
-                                >
-                                    Detail
-                                </Link>
+                {data
+                    .sort(
+                        (a, b) =>
+                            parseInt(a.roomNumber) - parseInt(b.roomNumber)
+                    )
+                    .map((room) => (
+                        <div
+                            key={room._id}
+                            className={`w-[24%] mt-4 bg-white rounded-lg border-l-4 mr-2 shadow-md ${
+                                room.isFree
+                                    ? "border-[#1cc88a]"
+                                    : "border-red-600"
+                            }`}
+                        >
+                            <div className="flex flex-col p-6">
+                                <div>
+                                    <p
+                                        className={`uppercase font-semibold text-lg ${
+                                            room.isFree
+                                                ? "text-[#1cc88a]"
+                                                : "text-red-600"
+                                        }`}
+                                    >
+                                        {getRoomTypeName(room.roomType)}
+                                    </p>
+                                    <p className="font-semibold text-lg mt-4">
+                                        {room.roomNumber}
+                                    </p>
+                                </div>
+                                <div className="flex justify-end mt-2 -mr-2 -mb-2">
+                                    <Link
+                                        to={`/admin/rooms/edit/${room._id}`}
+                                        className={` py-2 px-6 rounded-lg font-semibold ${
+                                            room.isFree
+                                                ? "text-[#1cc88a]"
+                                                : "text-red-600"
+                                        }`}
+                                    >
+                                        Edit
+                                    </Link>
+                                    <Link
+                                        to={`/admin/rooms/${room._id}`}
+                                        className={`text-white py-2 px-6 rounded-lg ${
+                                            room.isFree
+                                                ? "bg-[#1cc88a]"
+                                                : "bg-red-600"
+                                        }`}
+                                    >
+                                        Detail
+                                    </Link>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );
