@@ -11,6 +11,8 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { getBookingCountByMonthYear } from "../../../service/bookingService";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import ReportExport from "./ReportExport";
 import {
     getRevenueByMonthYear,
     viewListBill,
@@ -39,6 +41,7 @@ const AdminHome = () => {
     const [guests, setGuests] = useState([]);
     const [bills, setBills] = useState([]);
     const [totalCharge, setTotalCharge] = useState(0);
+    const [monthlyRevenue, setMonthlyRevenue] = useState([]);
 
     const years = Array.from(
         { length: 10 },
@@ -50,6 +53,8 @@ const AdminHome = () => {
     const getData = async () => {
         try {
             setIsLoading(true);
+
+            // Lấy danh sách phòng, nhân viên, khách hàng, hóa đơn
             const rooms = await viewListRoom(-1);
             const staff = await viewListStaff(-1);
             const guest = await viewListGuest(-1);
@@ -59,23 +64,45 @@ const AdminHome = () => {
             setStaff(staff?.data);
             setGuests(guest?.data);
             setBills(bill?.data);
+
+            // Lấy doanh thu từng tháng theo năm
+            const revenuePromises = months.map(async (month) => {
+                const { data } = await getRevenueByMonthYear(month, year); // Sử dụng year
+                return {
+                    month,
+                    totalRevenue: data.totalRevenue || 0,
+                    totalRoomCharge: data.totalRoomCharge || 0,
+                    totalSurcharge: data.totalSurcharge || 0,
+                    totalServiceCharge: data.totalServiceCharge || 0,
+                };
+            });
+            const revenueData = await Promise.all(revenuePromises);
+            setMonthlyRevenue(revenueData);
+
             setIsLoading(false);
         } catch (error) {
             console.error(error);
+            setIsLoading(false);
         }
     };
 
-    console.log(revenueData);
+    console.log("revenueData: ", revenueData);
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [year]);
 
     useEffect(() => {
         if (bills) {
             let accumulatedCharge = 0;
             bills.forEach((bill) => {
-                accumulatedCharge += bill.roomCharge + bill.serviceCharge;
+                if (bill.surchargeForeign && bill.surchargeQuantity) {
+                    accumulatedCharge +=
+                        bill.roomCharge +
+                        bill.serviceCharge +
+                        bill.surchargeForeign +
+                        bill.surchargeQuantity;
+                }
             });
             setTotalCharge(accumulatedCharge);
         }
@@ -125,6 +152,22 @@ const AdminHome = () => {
                             data: revenue.map((data) => data.totalRoomCharge),
                             backgroundColor: "rgba(255, 205, 86, 0.2)",
                             borderColor: "rgba(255, 205, 86, 1)",
+                            borderWidth: 1,
+                        },
+                        {
+                            label: "Total Service Price",
+                            data: revenue.map(
+                                (data) => data.totalServiceCharge
+                            ),
+                            backgroundColor: "rgba(255, 99, 132, 0.2)",
+                            borderColor: "rgba(255, 99, 132, 1)",
+                            borderWidth: 1,
+                        },
+                        {
+                            label: "Total Surchage",
+                            data: revenue.map((data) => data.totalSurcharge),
+                            backgroundColor: "rgba(54, 162, 235, 0.2)",
+                            borderColor: "rgba(54, 162, 235, 1)",
                             borderWidth: 1,
                         },
                     ],
@@ -188,12 +231,39 @@ const AdminHome = () => {
         fetchData();
     }, [year]);
 
+    console.log("monthlyRevenue: ", monthlyRevenue);
+
     return isLoading ? (
         <Loading />
     ) : (
         <>
-            <div className="text-[40px] font-semibold text-gray-600 mb-8">
-                Dashboard
+            <div className="flex justify-between">
+                <div className="text-[40px] font-semibold text-gray-600 mb-4">
+                    Dashboard
+                </div>
+                <div className="my-2">
+                    <PDFDownloadLink
+                        document={
+                            <ReportExport
+                                monthlyRevenue={monthlyRevenue}
+                                year={year}
+                            />
+                        }
+                        fileName={`Revenue_Report_${year}.pdf`}
+                    >
+                        {({ loading }) =>
+                            loading ? (
+                                <button className="btn btn-secondary" disabled>
+                                    Generating PDF...
+                                </button>
+                            ) : (
+                                <button className="btn btn-primary bg-indigo-600 text-white">
+                                    Export Revenue Report
+                                </button>
+                            )
+                        }
+                    </PDFDownloadLink>
+                </div>
             </div>
             <div className="flex w-full gap-4">
                 <div className="w-1/4 bg-white px-8 flex rounded-lg justify-between items-center border-l-4 border-blue-500">
@@ -247,6 +317,7 @@ const AdminHome = () => {
                     </div>
                 </div>
             </div>
+
             <div className=" bg-white rounded-lg mt-4">
                 <div className="m-4 pt-4">
                     <label className="mr-2">Year:</label>
@@ -266,7 +337,46 @@ const AdminHome = () => {
                     <div className="mt-8 w-1/2">
                         {revenueData && (
                             <Bar
-                                data={revenueData}
+                                data={{
+                                    labels: months.map(
+                                        (month) => `Tháng ${month}`
+                                    ),
+                                    datasets: [
+                                        {
+                                            label: "Doanh thu",
+                                            data: monthlyRevenue.map(
+                                                (rev) => rev.totalRevenue
+                                            ),
+                                            backgroundColor:
+                                                "rgba(75, 192, 192, 0.2)",
+                                            borderColor:
+                                                "rgba(75, 192, 192, 1)",
+                                            borderWidth: 1,
+                                        },
+                                        {
+                                            label: "Phụ thu",
+                                            data: monthlyRevenue.map(
+                                                (rev) => rev.totalSurcharge
+                                            ),
+                                            backgroundColor:
+                                                "rgba(255, 205, 86, 0.2)",
+                                            borderColor:
+                                                "rgba(255, 205, 86, 1)",
+                                            borderWidth: 1,
+                                        },
+                                        {
+                                            label: "Dịch vụ",
+                                            data: monthlyRevenue.map(
+                                                (rev) => rev.totalServiceCharge
+                                            ),
+                                            backgroundColor:
+                                                "rgba(255, 99, 132, 0.2)",
+                                            borderColor:
+                                                "rgba(255, 99, 132, 1)",
+                                            borderWidth: 1,
+                                        },
+                                    ],
+                                }}
                                 options={{
                                     responsive: true,
                                     plugins: {
@@ -275,7 +385,7 @@ const AdminHome = () => {
                                         },
                                         title: {
                                             display: true,
-                                            text: `Monthly Revenue Statistics for ${year}`,
+                                            text: `Thống kê doanh thu năm ${year}`,
                                         },
                                     },
                                 }}

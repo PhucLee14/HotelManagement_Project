@@ -47,7 +47,7 @@ const Invoice = () => {
         }
     };
 
-   const calculateTotal = (bills,guests) => {
+    const calculateTotal = (bills, guests) => {
         const {
             roomCharge,
             serviceCharge,
@@ -164,12 +164,12 @@ const Invoice = () => {
                                 (s) => s._id === bill.staff
                             );
                             console.log(bill);
-                            console.log(calculateTotal(bill,guest));
+                            console.log(calculateTotal(bill, guest));
                             console.log(bill.roomCharge);
                             console.log(bill.serviceCharge);
                             console.log(bill.surchargeForeign);
                             console.log(bill.surchargeQuantity);
-                            
+
                             return (
                                 <tr
                                     className="border hover:bg-gray-100"
