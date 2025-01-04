@@ -21,7 +21,7 @@ let add = async (req, res) => {
 
         room = await roomModel.create({
             roomNumber: data.roomNumber,
-            status: "Phòng còn trống",
+            status: "Available Room",
             isFree: true,
             roomType: data.roomType,
         });

@@ -11,7 +11,7 @@ const Registration = () => {
     const [registrations, setRegistrations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [filter, setFilter] = useState("Chưa nhận phòng");
+    const [filter, setFilter] = useState("Not Checked In");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState("");
@@ -135,31 +135,31 @@ const Registration = () => {
                             </li>
                             <li
                                 onClick={() =>
-                                    handleFilterChange("Chưa nhận phòng")
+                                    handleFilterChange("Not Checked In")
                                 }
                             >
-                                <a>Chưa nhận phòng</a>
+                                <a>Not Checked In</a>
                             </li>
                             <li
                                 onClick={() =>
-                                    handleFilterChange("Đã nhận phòng")
+                                    handleFilterChange("Checked In")
                                 }
                             >
-                                <a>Đã nhận phòng</a>
+                                <a>Checked In</a>
                             </li>
                             <li
                                 onClick={() =>
-                                    handleFilterChange("Đã trả phòng")
+                                    handleFilterChange("Checked Out")
                                 }
                             >
-                                <a>Đã trả phòng</a>
+                                <a>Checked Out</a>
                             </li>
                             <li
                                 onClick={() =>
-                                    handleFilterChange("Đã hủy phòng")
+                                    handleFilterChange("Reservation Cancelled")
                                 }
                             >
-                                <a>Đã hủy phòng</a>
+                                <a>Reservation Cancelled</a>
                             </li>
                         </ul>
                     </div>
@@ -223,9 +223,9 @@ const Registration = () => {
                                 </td>
                                 <td className="py-4 text-gray-500 text-center">
                                     {registration.roomInteraction ===
-                                        "Đã trả phòng" ||
+                                        "Checked Out" ||
                                     registration.roomInteraction ===
-                                        "Đã hủy phòng" ? (
+                                        "Reservation Cancelled" ? (
                                         ""
                                     ) : (
                                         <Link

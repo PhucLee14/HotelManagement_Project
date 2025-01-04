@@ -1,10 +1,5 @@
 const jwtActions = require("../middleware/jwtActions");
-// const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
-// const passport = require("passport");
-// require("dotenv").config();
-// const VerificationCodeModel = require("../models/VerificationCodeModel");
-// const sendMail = require("../utils/sendEmail");
 
 let register = async (req, res) => {
   // try {

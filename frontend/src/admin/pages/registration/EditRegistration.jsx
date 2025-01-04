@@ -30,9 +30,9 @@ const EditRegistration = () => {
             const data = await viewBooking(id);
             setBooking(data);
             setHaveForeignGuest(data.haveForeignGuest);
-            data.roomInteraction === "Chưa nhận phòng"
-                ? setRoomInteraction("Đã nhận phòng")
-                : setRoomInteraction("Đã trả phòng");
+            data.roomInteraction === "Not Checked In"
+                ? setRoomInteraction("Checked In")
+                : setRoomInteraction("Checked Out");
             setIsLoading(false);
         } catch (error) {
             console.error(error);
@@ -98,23 +98,23 @@ const EditRegistration = () => {
                     Edit Registration Form
                 </div>
                 <div>
-                    {booking.roomInteraction === "Chưa nhận phòng" ? (
+                    {booking.roomInteraction === "Not Checked In" ? (
                         <div className="py-2 text-gray-500">
                             <p className="text-gray-500 mb-2">
                                 Room Category Name
                             </p>
                             <select
                                 className="select select-bordered w-full text-gray-500"
-                                defaultValue="Đã nhận phòng"
+                                defaultValue="Checked In"
                                 onChange={(e) => {
                                     setRoomInteraction(e.target.value);
                                 }}
                             >
-                                <option value="Đã nhận phòng">
-                                    Đã nhận phòng
+                                <option value="Checked In">
+                                    Checked In
                                 </option>
-                                <option value="Đã hủy phòng">
-                                    Đã hủy phòng
+                                <option value="Reservation Cancelled">
+                                    Reservation Cancelled
                                 </option>
                             </select>
                             <div className="flex mt-2">
@@ -139,7 +139,7 @@ const EditRegistration = () => {
                                 <input
                                     className=" w-3/4 text-gray-500 border border-gray-300 rounded-lg py-2 px-4 "
                                     disabled
-                                    value="Đã trả phòng"
+                                    value="Checked Out"
                                 />
                             </div>
                             <div className="py-2 text-gray-500 w-full">

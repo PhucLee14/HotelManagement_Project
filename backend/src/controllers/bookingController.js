@@ -50,7 +50,7 @@ const createBooking = async (req, res) => {
             guest: guest._id,
             checkin: data.checkin,
             checkout: data.checkout,
-            roomInteraction: "Chưa nhận phòng",
+            roomInteraction: "Not Checked In",
             roomBookings: createdRoomBookings,
             haveForeignGuest: false,
         });
@@ -77,9 +77,9 @@ let editBooking = async (req, res) => {
 
     // Valid room interaction states
     const validRoomInteractions = [
-        "Đã nhận phòng",
-        "Đã hủy phòng",
-        "Đã trả phòng",
+        "Checked In",
+        "Reservation Cancelled",
+        "Checked Out",
     ];
 
     try {
@@ -104,7 +104,7 @@ let editBooking = async (req, res) => {
         const currentDate = new Date().toISOString().split("T")[0]; // format to YYYY-MM-DD;
         const checkin = booking.checkin.toISOString().split("T")[0];
 
-        if (roomInteraction === "Đã nhận phòng") {
+        if (roomInteraction === "Checked In") {
             if (checkin > currentDate) {
                 throw {
                     code: 1,
@@ -121,7 +121,7 @@ let editBooking = async (req, res) => {
         }
 
         let createdServiceBookings = null;
-        if (serviceBookings && roomInteraction === "Đã trả phòng") {
+        if (serviceBookings && roomInteraction === "Checked Out") {
             createdServiceBookings = await Promise.all(
                 serviceBookings.map(async (serviceBooking) => {
                     const createdServiceBooking =
@@ -158,7 +158,7 @@ let editBooking = async (req, res) => {
         }
 
         let bill = null;
-        if (roomInteraction === "Đã trả phòng") {
+        if (roomInteraction === "Checked Out") {
             const daysStayed =
                 (new Date(booking.checkout) - new Date(booking.checkin)) /
                 (1000 * 60 * 60 * 24);
@@ -328,7 +328,7 @@ const getAvailableRooms = async (req, res) => {
                     { checkout: { $gt: checkin } },
                     {
                         roomInteraction: {
-                            $nin: ["Đã hủy phòng", "Đã trả phòng"],
+                            $nin: ["Reservation Cancelled", "Checked Out"],
                         },
                     },
                 ],
@@ -602,7 +602,7 @@ const getBookingCountByMonthYear = async (req, res) => {
 
         const canceledBookingCount = await bookingModel.countDocuments({
             createdAt: { $gte: startDate, $lte: endDate },
-            roomInteraction: "Đã hủy phòng",
+            roomInteraction: "Reservation Cancelled",
         });
 
         res.status(200).json({

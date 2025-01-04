@@ -10,7 +10,7 @@ const AddStaff = () => {
         IDnumber: "",
         name: "",
         dateOfBirth: "",
-        role: "Nhân viên lễ tân",
+        role: "Receptionist",
         phoneNumber: "",
         username: "",
         password: "",
@@ -88,14 +88,14 @@ const AddStaff = () => {
                         onChange={handleChange}
                         className="w-3/4 outline-none rounded-lg p-2 border-gray-300 border mt-2"
                     >
-                        <option value="Nhân viên lễ tân">
-                            Nhân viên lễ tân
+                        <option value="Receptionist">
+                            Receptionist
                         </option>
-                        <option value="Nhân viên kinh doanh">
-                            Nhân viên kinh doanh
+                        <option value="Sales Staff">
+                            Sales Staff
                         </option>
-                        <option value="Nhân viên kế toán">
-                            Nhân viên kế toán
+                        <option value="Accountant">
+                            Accountant
                         </option>
                     </select>
                 </div>
