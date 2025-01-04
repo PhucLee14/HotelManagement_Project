@@ -17,7 +17,7 @@ let payment = async (req, res) => {
     const partnerCode = "MOMO";
     const redirectUrl = URL_FRONTEND;
     const ipnUrl =
-        "https://db4c-2a09-bac5-d46d-101e-00-19b-12f.ngrok-free.app/api/payment/callback";
+        "https://0e98-171-243-49-212.ngrok-free.app/api/payment/callback";
     const requestType = "payWithMethod";
     const orderId = partnerCode + new Date().getTime();
     const requestId = orderId;
@@ -76,6 +76,8 @@ let payment = async (req, res) => {
 };
 
 let callback = async (req, res) => {
+    console.log(req.body.resultCode);
+
     if (req.body.resultCode == 0) {
         const extraData = Buffer.from(req.body.extraData, "base64").toString(
             "utf-8"
@@ -105,7 +107,7 @@ let callback = async (req, res) => {
                     { checkout: { $gt: checkin } },
                     {
                         roomInteraction: {
-                            $nin: ["Đã hủy phòng", "Đã trả phòng"],
+                            $nin: ["Reservation Cancelled", "Checked Out"],
                         },
                     },
                 ],
@@ -160,10 +162,12 @@ let callback = async (req, res) => {
             guest: guest._id,
             checkin: checkin,
             checkout: checkout,
-            roomInteraction: "Chưa nhận phòng",
+            roomInteraction: "Not Checked In",
             roomBookings: createdRoomBookings,
             isDeposit: true,
         });
+        console.log(booking);
+
         return res
             .status(200)
             .json({ message: "Booking created successfully", booking });
