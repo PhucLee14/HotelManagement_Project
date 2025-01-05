@@ -91,6 +91,8 @@ const AddRegistration = () => {
         }
     };
 
+    console.log(roomTypes);
+
     const handleDelete = (index) => {
         setBooking((prevBooking) => ({
             ...prevBooking,
@@ -145,7 +147,7 @@ const AddRegistration = () => {
                 <div>
                     <div className="py-2 text-gray-500">
                         <p className="text-gray-500">Check-in Date</p>
-                        <input 
+                        <input
                             id="checkin"
                             type="date"
                             className="w-3/4 outline-none rounded-lg p-2 border-gray-300 border mt-2"
@@ -262,7 +264,7 @@ const AddRegistration = () => {
                     </div>
                     <div className="flex flex-col">
                         <button
-                            id="submit"
+                            id="create"
                             onClick={() => {
                                 createData();
                             }}

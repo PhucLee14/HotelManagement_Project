@@ -66,7 +66,7 @@ const RoomBookingModal = ({
                                         <option
                                             key={roomType._id}
                                             value={roomType._id}
-                                            id={`roomType-${roomType._id}`}
+                                            id={`roomType-${roomType.name}`}
                                         >
                                             {roomType.name}
                                         </option>
@@ -105,7 +105,7 @@ const RoomBookingModal = ({
                                                   <option
                                                       key={room._id}
                                                       value={room._id}
-                                                      id={`room-${room._id}`}
+                                                      id={`room-${room.roomNumber}`}
                                                   >
                                                       {room.roomNumber}
                                                   </option>
@@ -155,7 +155,7 @@ const RoomBookingModal = ({
                     </div>
                     <div className="mt-4">
                         <button
-                            id="submit"
+                            id="submit-form"
                             className={`py-2 px-16 text-white ${
                                 choosenRoomType && choosenRoom && clientQuantity
                                     ? "bg-black"
