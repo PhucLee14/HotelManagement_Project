@@ -44,7 +44,7 @@ const RoomBookingModal = ({
                             setClientQuantity("");
                         }}
                     >
-                        <i class="fa-regular fa-xmark p-2"></i>
+                        <i className="fa-regular fa-xmark p-2"></i>
                     </div>
                     <div className="text-[36px] text-gray-600 font-semibold my-4">
                         Add Room Form
@@ -53,6 +53,7 @@ const RoomBookingModal = ({
                         <div className=" mb-4">
                             <p className="text-gray-500 mb-2">Room Type</p>
                             <select
+                                id="roomType"
                                 className="select select-bordered w-full text-gray-500"
                                 value={choosenRoomType}
                                 onChange={(e) => {
@@ -65,6 +66,7 @@ const RoomBookingModal = ({
                                         <option
                                             key={roomType._id}
                                             value={roomType._id}
+                                            id={`roomType-${roomType._id}`}
                                         >
                                             {roomType.name}
                                         </option>
@@ -75,6 +77,7 @@ const RoomBookingModal = ({
                         <div className=" mb-4">
                             <p className="text-gray-500 mb-2">Room</p>
                             <select
+                                id="room"
                                 className="select select-bordered w-full text-gray-500"
                                 value={choosenRoom}
                                 onChange={(e) => {
@@ -102,6 +105,7 @@ const RoomBookingModal = ({
                                                   <option
                                                       key={room._id}
                                                       value={room._id}
+                                                      id={`room-${room._id}`}
                                                   >
                                                       {room.roomNumber}
                                                   </option>
@@ -115,6 +119,7 @@ const RoomBookingModal = ({
                                 Client Quantity
                             </p>
                             <select
+                                id="clientQuantity"
                                 className="select select-bordered w-full text-gray-500"
                                 value={clientQuantity}
                                 onChange={(e) => {
@@ -132,7 +137,13 @@ const RoomBookingModal = ({
                                                   i++
                                               ) {
                                                   options.push(
-                                                      <option>{i}</option>
+                                                      <option
+                                                          key={i}
+                                                          value={i}
+                                                          id={`clientQuantity-${i}`}
+                                                      >
+                                                          {i}
+                                                      </option>
                                                   );
                                               }
                                               return options;
@@ -144,6 +155,7 @@ const RoomBookingModal = ({
                     </div>
                     <div className="mt-4">
                         <button
+                            id="submit"
                             className={`py-2 px-16 text-white ${
                                 choosenRoomType && choosenRoom && clientQuantity
                                     ? "bg-black"

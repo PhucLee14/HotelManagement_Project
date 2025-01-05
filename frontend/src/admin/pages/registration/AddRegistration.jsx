@@ -145,7 +145,8 @@ const AddRegistration = () => {
                 <div>
                     <div className="py-2 text-gray-500">
                         <p className="text-gray-500">Check-in Date</p>
-                        <input
+                        <input 
+                            id="checkin"
                             type="date"
                             className="w-3/4 outline-none rounded-lg p-2 border-gray-300 border mt-2"
                             onChange={handleCheckin}
@@ -155,6 +156,7 @@ const AddRegistration = () => {
                     <div className="py-2 text-gray-500">
                         <p className="text-gray-500 z-10">Check-out Date</p>
                         <input
+                            id="checkout"
                             type="date"
                             className={`w-3/4 outline-none rounded-lg p-2 border-gray-300 border mt-2 ${
                                 !booking.checkin
@@ -179,6 +181,7 @@ const AddRegistration = () => {
                     <div className="py-2 text-gray-500">
                         <p className="text-gray-500">Phone Number</p>
                         <input
+                            id="phoneNumber"
                             type="text"
                             name="phoneNumber"
                             value={booking.phoneNumber}
@@ -242,6 +245,7 @@ const AddRegistration = () => {
                                 : ""}
                         </table>
                         <button
+                            id="roomBooking"
                             className={`border-indigo-400 border p-2 text-indigo-600 rounded-lg mt-4 ${
                                 !booking.checkout ? " cursor-default" : ""
                             }`}
@@ -258,6 +262,7 @@ const AddRegistration = () => {
                     </div>
                     <div className="flex flex-col">
                         <button
+                            id="submit"
                             onClick={() => {
                                 createData();
                             }}

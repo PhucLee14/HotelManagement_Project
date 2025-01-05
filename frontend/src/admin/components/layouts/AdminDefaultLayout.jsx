@@ -100,6 +100,7 @@ const AdminDefaultLayout = ({ children }) => {
                         <Link
                             className="w-full block p-4 font-semibold"
                             to="/admin/registration"
+                            id="registration_page"
                         >
                             <i class="fa-regular fa-calendar-lines-pen px-2"></i>
                             Registration Form

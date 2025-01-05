@@ -10,7 +10,7 @@ let viewListBill = async (req, res) => {
         let count;
 
         if (currentPage === -1) {
-            // Lấy hết dữ liệu
+            // Get all data
             bills = await billModel.find().sort({ createdAt: -1 });
             count = bills.length;
         } else {
@@ -27,40 +27,30 @@ let viewListBill = async (req, res) => {
         if (!bills || bills.length === 0) {
             throw {
                 code: 1,
-                message: "Không có data nào",
+                message: "No data found",
             };
         }
 
         res.status(200).json({
             code: 0,
-            message: "Lấy dữ liệu thành công",
-            count: count,
+            message: "Data retrieved successfully",
             data: bills,
+            count: count,
         });
     } catch (error) {
-        res.status(200).json({
-            code: error.code || 1,
-            message: error.message || "Lỗi: viewListBill",
+        res.status(500).json({
+            code: error.code || 500,
+            message: error.message || "Internal server error",
         });
     }
 };
 
 let searchBill = async (req, res) => {
     try {
-        const currentPage = parseInt(req.params.currentPage) || 1;
-        const keyword = req.params.keyword || null;
-
-        if (!keyword) {
-            throw {
-                code: 1,
-                message: "Hãy nhập nội dung tìm kiếm",
-            };
-        }
+        const { keyword, currentPage } = req.params;
         const regex = new RegExp(keyword, "i");
-
         const offset = 12 * (currentPage - 1);
 
-        // Tìm các khách hàng phù hợp hoặc nhân viên phù hợp
         const guests = await guestModel.find({
             name: regex,
         });
@@ -75,14 +65,14 @@ let searchBill = async (req, res) => {
         ) {
             throw {
                 code: 1,
-                message: "Không tìm thấy khách hàng hoặc nhân viên nào phù hợp",
+                message: "No matching guests or staff found",
             };
         }
 
         const guestIds = guests.map((guest) => guest._id);
         const staffIds = staffs.map((staff) => staff._id);
 
-        // Tìm các hóa đơn của các khách hàng hoặc nhân viên này
+        // Find bills for these guests or staff
         const bills = await billModel
             .find({
                 $or: [
@@ -101,32 +91,44 @@ let searchBill = async (req, res) => {
         if (!bills || bills.length === 0) {
             throw {
                 code: 1,
-                message: "Không có dữ liệu nào",
+                message: "No data found",
             };
         }
 
         res.status(200).json({
             code: 0,
-            message: "Tìm kiếm thành công",
-            count: count,
+            message: "Data retrieved successfully",
             data: bills,
+            count: count,
         });
     } catch (error) {
-        res.status(200).json({
-            code: error.code || 1,
-            message: error.message || "Lỗi: searchBill",
+        res.status(500).json({
+            code: error.code || 500,
+            message: error.message || "Internal server error",
         });
     }
 };
 
 let getById = async (req, res) => {
     try {
-        const id = req.params.id;
-        await billModel.findById({ _id: id }).then((bill) => res.json(bill));
-    } catch (error) {
+        const bill = await billModel.findById(req.params.id);
+
+        if (!bill) {
+            throw {
+                code: 1,
+                message: "Bill not found",
+            };
+        }
+
         res.status(200).json({
-            code: error.code || 1,
-            message: error.message,
+            code: 0,
+            message: "Bill retrieved successfully",
+            data: bill,
+        });
+    } catch (error) {
+        res.status(500).json({
+            code: error.code || 500,
+            message: error.message || "Internal server error",
         });
     }
 };
@@ -170,7 +172,7 @@ const getRevenueByMonthYear = async (req, res) => {
         if (totalRevenue.length === 0 || !totalRevenue[0].totalRevenue) {
             return res.status(200).json({
                 code: 0,
-                message: "Không có doanh thu nào trong tháng và năm này",
+                message: "No revenue data found",
                 data: {
                     totalRevenue: 0,
                     totalRoomCharge: 0,
@@ -182,7 +184,7 @@ const getRevenueByMonthYear = async (req, res) => {
 
         res.status(200).json({
             code: 0,
-            message: "Lấy doanh thu thành công",
+            message: "Revenue data retrieved successfully",
             data: {
                 totalRevenue: totalRevenue[0].totalRevenue,
                 totalRoomCharge: totalRevenue[0].totalRoomCharge,
@@ -193,7 +195,7 @@ const getRevenueByMonthYear = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             code: 1,
-            message: "Đã có lỗi xảy ra khi lấy doanh thu",
+            message: "An error occurred while retrieving revenue data",
         });
     }
 };
