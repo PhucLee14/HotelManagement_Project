@@ -46,7 +46,7 @@ const RoomTypeDetail = () => {
                         <p className="text-gray-500">{data.name}</p>
                     </div>
                     <div className="flex py-3 border-b">
-                        <p className="font-semibold mr-4">Category: </p>
+                        <p className="font-semibold mr-4">Capacity: </p>
                         <p className="text-gray-500">{data.capacity}</p>
                     </div>
                     <div className="flex py-3 border-b">

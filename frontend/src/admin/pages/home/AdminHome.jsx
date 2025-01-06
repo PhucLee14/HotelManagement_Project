@@ -337,46 +337,7 @@ const AdminHome = () => {
                     <div className="mt-8 w-1/2">
                         {revenueData && (
                             <Bar
-                                data={{
-                                    labels: months.map(
-                                        (month) => `Tháng ${month}`
-                                    ),
-                                    datasets: [
-                                        {
-                                            label: "Doanh thu",
-                                            data: monthlyRevenue.map(
-                                                (rev) => rev.totalRevenue
-                                            ),
-                                            backgroundColor:
-                                                "rgba(75, 192, 192, 0.2)",
-                                            borderColor:
-                                                "rgba(75, 192, 192, 1)",
-                                            borderWidth: 1,
-                                        },
-                                        {
-                                            label: "Phụ thu",
-                                            data: monthlyRevenue.map(
-                                                (rev) => rev.totalSurcharge
-                                            ),
-                                            backgroundColor:
-                                                "rgba(255, 205, 86, 0.2)",
-                                            borderColor:
-                                                "rgba(255, 205, 86, 1)",
-                                            borderWidth: 1,
-                                        },
-                                        {
-                                            label: "Dịch vụ",
-                                            data: monthlyRevenue.map(
-                                                (rev) => rev.totalServiceCharge
-                                            ),
-                                            backgroundColor:
-                                                "rgba(255, 99, 132, 0.2)",
-                                            borderColor:
-                                                "rgba(255, 99, 132, 1)",
-                                            borderWidth: 1,
-                                        },
-                                    ],
-                                }}
+                                data={revenueData}
                                 options={{
                                     responsive: true,
                                     plugins: {
@@ -385,7 +346,7 @@ const AdminHome = () => {
                                         },
                                         title: {
                                             display: true,
-                                            text: `Thống kê doanh thu năm ${year}`,
+                                            text: `Yearly Bookings Statistics for ${year}`,
                                         },
                                     },
                                 }}

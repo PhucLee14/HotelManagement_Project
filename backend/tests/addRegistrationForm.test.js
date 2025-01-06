@@ -4,15 +4,18 @@ require("chromedriver");
 
 async function login(driver) {
     await driver.get("http://localhost:3000/admin/login");
+    await driver.wait(until.elementLocated(By.id("username")), 10000); // Wait for username field
     let usernameField = await driver.findElement(By.id("username"));
     await usernameField.sendKeys("TK001");
 
+    await driver.wait(until.elementLocated(By.id("password")), 10000); // Wait for password field
     let passwordField = await driver.findElement(By.id("password"));
     await passwordField.sendKeys("tk001");
 
     let loginButton = await driver.findElement(By.id("submit"));
     await loginButton.click();
 
+    // Wait for the next page to load completely
     await driver.sleep(5000);
 
     console.log("Login successful!");
@@ -37,21 +40,38 @@ async function fillRegistrationForm(
     driver,
     phoneNumber,
     checkinDate,
-    checkoutDate
+    checkoutDate,
+    room
 ) {
     console.log("Filling in the registration form...");
 
     // Enter Check-in date
     await driver.wait(until.elementLocated(By.id("checkin")), 10000);
+    await driver.findElement(By.id("checkin")).clear();
     await driver.findElement(By.id("checkin")).sendKeys(checkinDate);
 
     // Enter Check-out date
     await driver.wait(until.elementLocated(By.id("checkout")), 10000);
+    await driver.findElement(By.id("checkout")).clear();
     await driver.findElement(By.id("checkout")).sendKeys(checkoutDate);
 
     // Enter Phone Number
     await driver.wait(until.elementLocated(By.id("phoneNumber")), 10000);
-    await driver.findElement(By.id("phoneNumber")).sendKeys(phoneNumber);
+    const phoneNumberElement = await driver.findElement(By.id("phoneNumber"));
+    if (
+        (await phoneNumberElement.isEnabled()) &&
+        (await phoneNumberElement.isDisplayed())
+    ) {
+        await driver.executeScript(
+            "arguments[0].value = '';",
+            phoneNumberElement
+        ); // Sử dụng JavaScript để xóa giá trị
+        await phoneNumberElement.sendKeys(phoneNumber);
+    } else {
+        console.error("Phone number element is not enabled or not displayed");
+    }
+
+    await driver.sleep(3000);
 
     // Continue with other form fields as before
     await driver.wait(until.elementLocated(By.id("roomBooking")), 10000);
@@ -60,16 +80,24 @@ async function fillRegistrationForm(
     await driver.wait(until.elementLocated(By.id("roomType-Superior")), 10000);
     await driver.findElement(By.id("roomType-Superior")).click();
 
-    await driver.wait(until.elementLocated(By.id("room-602")), 10000);
-    await driver.findElement(By.id("room-602")).click();
+    await driver.wait(until.elementLocated(By.id(room)), 10000);
+    await driver.findElement(By.id(room)).click();
 
     await driver.wait(until.elementLocated(By.id("clientQuantity")), 10000);
     await driver
         .findElement(By.css('#clientQuantity option[value="2"]'))
         .click();
 
+    await driver.sleep(3000);
+
     await driver.wait(until.elementLocated(By.id("submit-form")), 10000);
     await driver.findElement(By.id("submit-form")).click();
+
+    await driver.sleep(1000);
+
+    await driver.findElement(By.id("create")).click();
+
+    await driver.sleep(5000);
 
     console.log(
         "Registration form submitted with phone number:",
@@ -90,28 +118,17 @@ async function fillRegistrationForm(
         await fillRegistrationForm(
             driver,
             "0123456789",
-            "01-10-2023",
-            "10-10-2023"
+            "07-01-2025",
+            "08-01-2025",
+            "room-601"
         );
-
         // Test 2: Fill the form with the second set of data
-        await login(driver); // Re-login if needed
-        await navigateToAddRegistrationFormPage(driver);
-        await fillRegistrationForm(
-            driver,
-            "0352621828",
-            "15-10-2023",
-            "20-10-2023"
-        );
-
-        // Test 2: Fill the form with the third set of data
-        await login(driver); // Re-login if needed
-        await navigateToAddRegistrationFormPage(driver);
         await fillRegistrationForm(
             driver,
             "0352621828",
             "07-01-2025",
-            "09-01-2025"
+            "08-01-2025",
+            "room-602"
         );
 
         console.log("All tests passed successfully!");

@@ -174,7 +174,7 @@ let editBooking = async (req, res) => {
                     );
                     const headcount = roomBooking.headcount;
                     let surchargeTemp = 0;
-                    if (headcount >= 3) {
+                    if (headcount >= roomType.capacity) {
                         surchargeTemp =
                             (roomType.price * daysStayed * 25) / 100;
                     }

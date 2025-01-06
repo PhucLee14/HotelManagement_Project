@@ -21,9 +21,9 @@ const InvoiceDetail = () => {
         try {
             setIsLoading(true);
             const data = await viewBillDetail(id);
-            const guestData = await viewGuest(data.guest);
-            const staffData = await viewStaff(data.staff);
-            setBill(data);
+            const guestData = await viewGuest(data.data.guest);
+            const staffData = await viewStaff(data.data.staff);
+            setBill(data.data);
             setGuest(guestData);
             setStaff(staffData);
             setIsLoading(false);
@@ -32,6 +32,8 @@ const InvoiceDetail = () => {
             setIsLoading(false);
         }
     };
+
+    console.log("guest: ", guest);
 
     const calculateTotal = () => {
         const {
@@ -45,7 +47,7 @@ const InvoiceDetail = () => {
         console.log(bill.serviceCharge);
         console.log(bill.surchargeForeign);
         console.log(bill.surchargeQuantity);
-        
+
         if (guest.guestCategories === "Vip" && discount) {
             return (
                 roomCharge +

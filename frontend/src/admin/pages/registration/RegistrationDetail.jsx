@@ -174,9 +174,9 @@ const RegistrationDetail = () => {
                                                       className="text-center"
                                                   >
                                                       <td className="py-2">
-                                                          {/* {roomType.name} */}
+                                                          {roomType.name}
                                                       </td>
-                                                      {/* <td>{room.roomNumber}</td> */}
+                                                      <td>{room.roomNumber}</td>
                                                       <td>
                                                           {
                                                               roomBooking.headcount

@@ -85,9 +85,9 @@ const InvoicePDF = () => {
                 setIsLoading(true);
                 console.log("Fetching data...");
                 const billDetail = await viewBillDetail(id);
-                const bookingData = await viewBooking(billDetail.booking);
-                const guestData = await viewGuest(billDetail.guest);
-                const staffData = await viewStaff(billDetail.staff);
+                const bookingData = await viewBooking(billDetail.data.booking);
+                const guestData = await viewGuest(billDetail.data.guest);
+                const staffData = await viewStaff(billDetail.data.staff);
                 const roomsBooking = await viewListRoomBooking(-1);
                 const servicesBooking = await viewListServiceBooking(-1);
                 const rooms = await viewListRoom(-1);
@@ -115,6 +115,7 @@ const InvoicePDF = () => {
                     services: services,
                     roomTypes: roomTypes,
                 });
+                console.log("Bill detail", billDetail);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -137,7 +138,7 @@ const InvoicePDF = () => {
             surchargeForeign,
             surchargeQuantity,
             discount,
-        } = data.bill;
+        } = data.bill.data;
         if (data.guest.guestCategories === "Vip" && discount) {
             return (
                 roomCharge +
@@ -363,24 +364,25 @@ const InvoicePDF = () => {
                             ]}
                         >
                             <Text style={styles.text}>
-                                Room Charge: {data.bill.roomCharge} VNĐ
+                                Room Charge: {data.bill.data.roomCharge} VNĐ
                             </Text>
                             <Text style={styles.text}>
-                                Service Charge: {data.bill.serviceCharge} VNĐ
+                                Service Charge: {data.bill.data.serviceCharge}{" "}
+                                VNĐ
                             </Text>
                             {data.guest.guestCategories === "Vip" &&
                                 data.bill.discount && (
                                     <Text style={styles.text}>
-                                        Discount: {data.bill.discount} VNĐ
+                                        Discount: {data.bill.data.discount} VNĐ
                                     </Text>
                                 )}
                             <Text style={styles.text}>
                                 Surcharge For Quantity:{" "}
-                                {data.bill.surchargeQuantity} VNĐ
+                                {data.bill.data.surchargeQuantity} VNĐ
                             </Text>
                             <Text style={styles.text}>
                                 Surcharge For Foreign:{" "}
-                                {data.bill.surchargeForeign} VNĐ
+                                {data.bill.data.surchargeForeign} VNĐ
                             </Text>
                             <Text style={styles.text}>
                                 Total: {calculateTotal()} VNĐ
